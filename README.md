@@ -1,2 +1,3 @@
 # tinyredis
-mini version of redis built w/ c
+
+a Redis-inspired in-memory key-value server in C
