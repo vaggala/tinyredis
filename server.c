@@ -6,6 +6,8 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+// TCP server
+
 static void msg(const char *m) {
     fprintf(stderr, "%s\n", m);
 }
@@ -27,6 +29,32 @@ static void do_something(int connfd) {
     printf("muahahahhaha client says %s\n", rbuf);
     char wbuf[] = "world";
     write(connfd, wbuf, strlen(wbuf));
+}
+
+// a simple binary protocol
+// we want to split the byte stream into messages
+// each msg contains a 4 byte little endian int indicating length of req
+// and variable length payload
+
+// this is the accept loop
+static void multiple_requests(int fd) {
+    while (1) {
+        // accept
+        struct sockaddr_in client_addr;
+        socklen_t addrlen = sizeof(client_addr);
+        int connfd = accept(fd, (struct sockaddr *)&client_addr, &addrlen);
+        if (connfd < 0) {
+            continue; // error
+        }
+        // only serve one client conn at once
+        while (1) {
+            int32_t err = one_request(connfd);
+            if (err) {
+                break;
+            }
+        }
+        close(connfd);
+    }
 }
 
 int main(void) {
