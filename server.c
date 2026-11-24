@@ -131,14 +131,7 @@ int main(void) {
     }
 
     // accept
-    while (1) {
-        struct sockaddr_in client_addr;
-        socklen_t addrlen = sizeof(client_addr);
-        int connfd = accept(fd, (struct sockaddr *)&client_addr, &addrlen);
-        if (connfd < 0) {
-            continue;
-        }
-        multiple_requests(fd);
-        return 0;
-    }
+    multiple_requests(fd);
+    return 0;
 }
+
